@@ -1,22 +1,26 @@
 
-// Imports the Google Cloud client library
-const {Translate} = require('@google-cloud/translate').v2;
+import pkg from '@google-cloud/translate'
 
-// const projectId = '';
-// // Instantiates a client
-// const translate = new Translate({projectId});
-const translate = new Translate();
-async function quickStart() {
-  // The text to translate
-  const text = '¡Claro! Aquí tienes una frase en español: "Hola, ¿cómo estás?"';
+const { Translate } = pkg.v2
 
-  // The target language
-  const target = 'en'; // Translate to Spanish
+const googleTranslate = new Translate()
 
-  // Translates some text into Spanish
-  const [translation] = await translate.translate(text, target);
-  console.log(`Text: ${text}`);
-  console.log(`Translation: ${translation}`);
+async function transcribe(txt, trgt) {
+    return new Promise(async (resolve, reject)=>{
+
+        const [translation] = await googleTranslate.translate(txt, trgt);
+        resolve(translation)
+    })
 }
 
-quickStart();
+// The text to translate
+const text = '¡Claro! Aquí tienes una frase en español: "Hola, ¿cómo estás?"'
+
+transcribe(text, 'en')
+.then(response=>{
+
+    console.log(`Text: ${text}`)
+    console.log(`Translation: ${response}`)
+
+})
+
