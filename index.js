@@ -1,26 +1,34 @@
+import express from 'express'
+import cors from 'cors'
+import { translate } from './utils/translator.js'
 
-import pkg from '@google-cloud/translate'
+const api = express()
+api.use(express.json())
+api.use(cors())
+const PORT = 5000
 
-const { Translate } = pkg.v2
+// Define a route handler for the empty route
+api.get('/', (req, res) => {
+    res.send('Welcome to the Transcription Server!')
+})
 
-const googleTranslate = new Translate()
+api.post('/translate', (req, res) => {
 
-async function transcribe(txt, trgt) {
-    return new Promise(async (resolve, reject)=>{
+    const { text } = req.body
+    console.log("RCVD: ", text)
+    translate(text, 'en')
+        .then(response => {
 
-        const [translation] = await googleTranslate.translate(txt, trgt);
-        resolve(translation)
-    })
-}
+            console.log(`Text: ${text}`)
+            console.log(`Translation: ${response}`)
 
-// The text to translate
-const text = '¡Claro! Aquí tienes una frase en español: "Hola, ¿cómo estás?"'
+            res.status(200).send(JSON.stringify({ response, given: { ...req.body } }))
 
-transcribe(text, 'en')
-.then(response=>{
-
-    console.log(`Text: ${text}`)
-    console.log(`Translation: ${response}`)
+        })
 
 })
 
+// Start the server
+api.listen(PORT, () => {
+    console.log(`Server is running on http://localhost:${PORT}`)
+})
